@@ -2,8 +2,6 @@
     agent any
 
     environment {
-        DOCKER_IMAGE = 'aspnet-core-webapi'       // Nom de l'image Docker
-        DOCKER_TAG = 'latest'                     // Tag de l'image
         BUILD_CONFIGURATION = 'Release'          // Configuration du build (Release/Debug)
         DOTNET_PROJECT = 'AppTest/AppTest.csproj' // Chemin du fichier .csproj
     }
@@ -36,9 +34,6 @@
                 sh 'dotnet test ${DOTNET_PROJECT} -c ${BUILD_CONFIGURATION}'
             }
         }
-
-        
-
     }
 
     post {
