@@ -11,48 +11,60 @@
     stages {
         stage('Checkout Code') {
             steps {
-                echo 'Cloning repository...'
-                git branch: 'master', url: 'https://github.com/Mohamed86122/Project-payment-gateway'
+                script {
+                    echo 'Cloning repository...'
+                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mohamed86122/Project-payment-gateway']]])
+                }
             }
         }
 
         stage('Restore Dependencies') {
             steps {
-                echo 'Restoring dependencies...'
-                sh 'dotnet restore ${DOTNET_PROJECT}'
+                script {
+                    echo 'Restoring dependencies...'
+                    sh "dotnet restore \"${env.DOTNET_PROJECT}\""
+                }
             }
         }
 
         stage('Build Project') {
             steps {
-                echo 'Building the project...'
-                sh 'dotnet build ${DOTNET_PROJECT} -c ${BUILD_CONFIGURATION}'
+                script {
+                    echo 'Building the project...'
+                    sh "dotnet build \"${env.DOTNET_PROJECT}\" -c ${env.BUILD_CONFIGURATION}"
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo 'Running tests...'
-                sh 'dotnet test ${DOTNET_PROJECT} -c ${BUILD_CONFIGURATION}'
+                script {
+                    echo 'Running tests...'
+                    sh "dotnet test \"${env.DOTNET_PROJECT}\" -c ${env.BUILD_CONFIGURATION}"
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo 'Building Docker image...'
-                sh 'docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} .'
+                script {
+                    echo 'Building Docker image...'
+                    sh "docker build -t ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} ."
+                }
             }
         }
 
         stage('Push Docker Image to DockerHub') {
             steps {
-                echo 'Pushing Docker image to DockerHub...'
-                withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                    sh '''
-                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} $DOCKER_USERNAME/${DOCKER_IMAGE}:${DOCKER_TAG}
-                    docker push $DOCKER_USERNAME/${DOCKER_IMAGE}:${DOCKER_TAG}
-                    '''
+                script {
+                    echo 'Pushing Docker image to DockerHub...'
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub_credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh '''
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                        docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} $DOCKER_USERNAME/${DOCKER_IMAGE}:${DOCKER_TAG}
+                        docker push $DOCKER_USERNAME/${DOCKER_IMAGE}:${DOCKER_TAG}
+                        '''
+                    }
                 }
             }
         }
@@ -60,10 +72,14 @@
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            script {
+                echo 'Pipeline completed successfully!'
+            }
         }
         failure {
-            echo 'Pipeline failed. Please check the logs.'
+            script {
+                echo 'Pipeline failed. Please check the logs.'
+            }
         }
     }
 }
