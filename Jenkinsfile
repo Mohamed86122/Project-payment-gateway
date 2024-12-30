@@ -13,7 +13,7 @@
             steps {
                 script {
                     echo 'Cloning repository...'
-                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mohamed86122/Project-payment-gateway']]])
+                    checkout([$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], userRemoteConfigs: [[url: 'https://github.com/Mohamed86122/Project-payment-gateway']]])
                 }
             }
         }
