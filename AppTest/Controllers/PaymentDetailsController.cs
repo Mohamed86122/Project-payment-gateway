@@ -97,7 +97,6 @@ namespace AppTest.Controllers
 		}
 
 
-		// DELETE: api/PaymentDetails/5
 		[HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaymentDetail(int id)
         {
